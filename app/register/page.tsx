@@ -3,26 +3,32 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { getUsers, saveUser, setSession } from '../../lib/storage'
 
 const emojis = ['😀', '😎', '🤓', '😊', '🙂', '🤗', '😉', '😌']
 
 export default function Register() {
   const [form, setForm] = useState({
-    avatar: '',
+    avatar: '😀',
     name: '',
     email: '',
     password: '',
     budget: 1000
   })
+  const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
+    const users = getUsers()
+    if (users.some((user: any) => user.email === form.email)) {
+      setError('Email already registered')
+      return
+    }
+
     const newUser = { ...form, id: Date.now() }
-    users.push(newUser)
-    localStorage.setItem('users', JSON.stringify(users))
-    localStorage.setItem('session', JSON.stringify(newUser))
+    saveUser(newUser)
+    setSession(newUser)
     router.push('/dashboard')
   }
 
@@ -38,7 +44,7 @@ export default function Register() {
                 <button
                   key={emoji}
                   type="button"
-                  onClick={() => setForm({...form, avatar: emoji})}
+                  onClick={() => setForm({ ...form, avatar: emoji })}
                   className={`text-2xl p-2 rounded ${form.avatar === emoji ? 'bg-accent' : 'bg-slate-800'}`}
                 >
                   {emoji}
@@ -51,7 +57,7 @@ export default function Register() {
             <input
               type="text"
               value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full p-2 bg-slate-800 rounded"
               required
             />
@@ -61,7 +67,7 @@ export default function Register() {
             <input
               type="email"
               value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full p-2 bg-slate-800 rounded"
               required
             />
@@ -71,7 +77,7 @@ export default function Register() {
             <input
               type="password"
               value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full p-2 bg-slate-800 rounded"
               required
             />
@@ -84,10 +90,11 @@ export default function Register() {
               max="10000"
               step="100"
               value={form.budget}
-              onChange={(e) => setForm({...form, budget: Number(e.target.value)})}
+              onChange={(e) => setForm({ ...form, budget: Number(e.target.value) })}
               className="w-full"
             />
           </div>
+          {error && <p className="text-red-400">{error}</p>}
           <button type="submit" className="w-full py-2 bg-accent text-slate-950 rounded font-semibold">Register</button>
         </form>
         <p className="mt-4 text-center">

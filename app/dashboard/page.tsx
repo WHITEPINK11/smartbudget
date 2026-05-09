@@ -31,7 +31,6 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold mb-6 text-accent">Dashboard</h1>
         <BalanceCard balance={balance} spent={totalSpent} limit={currentUser.budget} percentage={limitPercentage} />
         <div className="mt-6">
-          <button className="px-4 py-2 bg-accent text-slate-950 rounded font-semibold">Add Expense</button>
           <ExpenseModal onAdd={addExpense} />
         </div>
         <div className="mt-6">
@@ -49,6 +48,7 @@ export default function Dashboard() {
                 </div>
               </div>
             ))}
+            {expenses.length === 0 && <div className="bg-slate-900 p-4 rounded text-slate-400">No expenses yet. Add your first expense.</div>}
           </div>
         </div>
       </main>

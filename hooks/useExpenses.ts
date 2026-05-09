@@ -3,23 +3,31 @@
 import { useState, useEffect } from 'react'
 import { getExpenses, saveExpenses } from '../lib/storage'
 
-export const useExpenses = () => {
+export const useExpenses = (userId?: number) => {
   const [expenses, setExpenses] = useState<any[]>([])
 
   useEffect(() => {
-    setExpenses(getExpenses())
-  }, [])
+    const allExpenses: any[] = getExpenses()
+    setExpenses(userId ? allExpenses.filter((expense: any) => expense.userId === userId) : allExpenses)
+  }, [userId])
 
   const addExpense = (expense: any) => {
-    const newExpense = { ...expense, id: Date.now(), date: new Date().toISOString() }
-    const updated = [...expenses, newExpense]
-    setExpenses(updated)
+    const currentExpenses = getExpenses()
+    const newExpense = {
+      ...expense,
+      id: Date.now(),
+      date: new Date().toISOString(),
+      userId: userId || 0,
+    }
+    const updated = [...currentExpenses, newExpense]
+    setExpenses(updated.filter(expense => expense.userId === userId))
     saveExpenses(updated)
   }
 
   const deleteExpense = (id: number) => {
-    const updated = expenses.filter(e => e.id !== id)
-    setExpenses(updated)
+    const currentExpenses = getExpenses()
+    const updated = currentExpenses.filter(e => e.id !== id)
+    setExpenses(updated.filter(expense => expense.userId === userId))
     saveExpenses(updated)
   }
 

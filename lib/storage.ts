@@ -4,7 +4,7 @@ export const getUsers = () => {
 }
 
 export const saveUser = (user: any) => {
-  const users = getUsers()
+  const users = getUsers().filter((existing: any) => existing.id !== user.id)
   users.push(user)
   localStorage.setItem('users', JSON.stringify(users))
 }

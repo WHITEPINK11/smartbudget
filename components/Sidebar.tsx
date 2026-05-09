@@ -1,10 +1,17 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '../hooks/useAuth'
 
 export default function Sidebar() {
   const { currentUser, logout } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
+  }
 
   return (
     <aside className="w-64 bg-slate-900 p-6 flex flex-col">
@@ -29,7 +36,7 @@ export default function Sidebar() {
           <span className="text-2xl">{currentUser?.avatar}</span>
           <span>{currentUser?.name}</span>
         </div>
-        <button onClick={logout} className="w-full py-2 bg-red-600 rounded font-semibold">Logout</button>
+        <button onClick={handleLogout} className="w-full py-2 bg-red-600 rounded font-semibold">Logout</button>
       </div>
     </aside>
   )

@@ -3,18 +3,19 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { getUsers, setSession } from '../../lib/storage'
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const users = JSON.parse(localStorage.getItem('users') || '[]')
+    const users = getUsers()
     const user = users.find((u: any) => u.email === form.email && u.password === form.password)
     if (user) {
-      localStorage.setItem('session', JSON.stringify(user))
+      setSession(user)
       router.push('/dashboard')
     } else {
       setError('Invalid credentials')
@@ -31,7 +32,7 @@ export default function Login() {
             <input
               type="email"
               value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full p-2 bg-slate-800 rounded"
               required
             />
@@ -41,7 +42,7 @@ export default function Login() {
             <input
               type="password"
               value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full p-2 bg-slate-800 rounded"
               required
             />
@@ -50,7 +51,7 @@ export default function Login() {
           <button type="submit" className="w-full py-2 bg-accent text-slate-950 rounded font-semibold">Login</button>
         </form>
         <p className="mt-4 text-center">
-          Don't have an account? <Link href="/register" className="text-accent">Register</Link>
+          Don&apos;t have an account? <Link href="/register" className="text-accent">Register</Link>
         </p>
       </div>
     </div>
